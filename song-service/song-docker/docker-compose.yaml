@@ -1,0 +1,17 @@
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: postgres-song
+    env_file:
+      - postgres-17.env
+    volumes:
+      - ~/mp3-song:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - mp3-network
+
+networks:
+  mp3-network:
+    driver: bridge

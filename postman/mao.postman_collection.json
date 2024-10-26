@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "024b3cea-6ecb-468f-b5d5-7284cd8adeb3",
+		"name": "mao",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1315799"
+	},
+	"item": [
+		{
+			"name": "resource-server",
+			"item": [
+				{
+					"name": "resource",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/resources/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"resources",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resource",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "audio/mpeg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/Alexej_Barzykin/Library/CloudStorage/OneDrive-EPAM/Learn/Microservices#1/queen.mp3"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8081/resources",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"resources"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resources",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/resources?ids=1,2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"resources"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "1,2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "sound-server",
+			"item": [
+				{
+					"name": "createSong",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"We are the champions\",\n    \"artist\": \"Queen\",\n    \"album\": \"News of the world\",\n    \"length\": \"2:59\",\n    \"resourceId\": 6,\n    \"year\": \"1977\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8082/songs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"songs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSong",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/songs/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"songs",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteSong",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8082/songs?ids=1,2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8082",
+							"path": [
+								"songs"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "1,2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

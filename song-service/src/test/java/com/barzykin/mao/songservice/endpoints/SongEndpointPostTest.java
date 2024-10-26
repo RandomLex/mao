@@ -1,6 +1,7 @@
 package com.barzykin.mao.songservice.endpoints;
 
 import com.barzykin.mao.songservice.congurations.MapperConfig;
+import com.barzykin.mao.songservice.dto.ErrorResponse;
 import com.barzykin.mao.songservice.dto.SongCreateResponse;
 import com.barzykin.mao.songservice.dto.SongDto;
 import com.barzykin.mao.songservice.model.Song;

@@ -5,10 +5,10 @@ services:
     container_name: postgres-resource
     env_file:
       - postgres-17.env
-    volumes:
-      - ~/mp3-resource:/var/lib/postgresql/data
+#    volumes:
+#      - ~/mp3-resource:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "54321:5432"
     networks:
       - mp3-network
 

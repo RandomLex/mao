@@ -1,18 +1,46 @@
 version = '0.0.1-SNAPSHOT'
 
+tasks.register('composeUp', Exec) {
+    workingDir "$projectDir/resource-docker"
+    commandLine 'docker', 'compose', 'up', '-d'
+}
+
+tasks.register('composeDown', Exec) {
+    workingDir "$projectDir/resource-docker"
+    commandLine 'docker', 'compose', 'down'
+}
+
+tasks.build {
+    dependsOn composeUp
+}
+
+tasks.bootRun {
+    dependsOn composeUp
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    //testing
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'io.projectreactor:reactor-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    //db
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'io.r2dbc:r2dbc-postgresql'
+
+    //flyway
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'org.postgresql:postgresql'
 
     //apache tika
     implementation 'org.apache.tika:tika-core'
     implementation 'org.apache.tika:tika-parsers-standard-package'
+
+    //testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+
 }

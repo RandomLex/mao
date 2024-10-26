@@ -1,8 +1,13 @@
 package com.barzykin.mao.resourceservice.model;
 
-import lombok.Data;
+import org.springframework.data.annotation.Id;
 
-@Data
-public class Resource {
-
+public record Resource(
+    @Id
+    Long id,
+    byte[] data
+) {
+    public Resource(byte[] data) {
+        this(null, data);
+    }
 }

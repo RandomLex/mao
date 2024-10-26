@@ -1,8 +1,10 @@
 package com.barzykin.mao.songservice.endpoints;
 
 import com.barzykin.mao.songservice.congurations.MapperConfig;
+import com.barzykin.mao.songservice.dto.ErrorResponse;
 import com.barzykin.mao.songservice.dto.SongDto;
 
+import com.barzykin.mao.songservice.errors.SongNotFoundException;
 import com.barzykin.mao.songservice.model.Song;
 import com.barzykin.mao.songservice.services.SongService;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +64,7 @@ class SongEndpointGetTest {
 
     @Test
     void getSong_notFound() {
-        Mockito.when(songService.getSong(1L)).thenReturn(Mono.empty());
+        Mockito.when(songService.getSong(1L)).thenThrow(new SongNotFoundException("Song with id 1 not found"));
         webTestClient.get()
             .uri("/songs/1")
             .accept(MediaType.APPLICATION_JSON)

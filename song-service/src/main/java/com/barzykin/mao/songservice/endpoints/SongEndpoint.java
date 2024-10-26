@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,16 +31,14 @@ public class SongEndpoint {
     private final ModelMapper modelMapper;
 
     @GetMapping("/songs/{id}")
-    public Mono<ResponseEntity> getSong(@PathVariable long id) {
+    public Mono<ResponseEntity<SongDto>> getSong(@PathVariable long id) {
         return songService.getSong(id)
-            .map(song -> ResponseEntity.ok(modelMapper.map(song, SongDto.class)))
-            .cast(ResponseEntity.class)
-            // Custom specification for an empty 200 response to be 404
-            .switchIfEmpty(songNotFoundResponse(id));
+            .map(song -> ResponseEntity.ok(modelMapper.map(song, SongDto.class)));
     }
 
     @PostMapping("/songs")
     public Mono<ResponseEntity<SongCreateResponse>> createSong(@Valid @RequestBody SongDto request) {
+        log.info("Creating song: {}", request);
         // Error handling via GlobalExceptionHandler by for Non-valid responses
         return songService.createSong(modelMapper.map(request, Song.class))
             .map(id -> ResponseEntity.ok(new SongCreateResponse(id)));
@@ -51,15 +48,6 @@ public class SongEndpoint {
     public Flux<Long> deleteSongs(@RequestParam(required = false) String ids) {
         // Error handling via GlobalExceptionHandler by default
         return songService.deleteSongs(strToLongs(ids));
-    }
-
-    private static Mono<ResponseEntity<ErrorResponse>> songNotFoundResponse(long id) {
-        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                "Song with id " + id + " not found"
-            )));
     }
 
     private static List<Long> strToLongs(String ids) {

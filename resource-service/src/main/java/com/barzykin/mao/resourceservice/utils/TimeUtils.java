@@ -1,6 +1,11 @@
 package com.barzykin.mao.resourceservice.utils;
 
-public class TimeUtils {
+public final class TimeUtils {
+
+    private TimeUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String secondsAsDoubleToHMS(String seconds) {
         double s = Double.parseDouble(seconds);
         int h = (int) (s / 3600);

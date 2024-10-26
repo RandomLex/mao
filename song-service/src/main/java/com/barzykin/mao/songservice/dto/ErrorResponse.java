@@ -1,4 +1,4 @@
-package com.barzykin.mao.songservice.endpoints;
+package com.barzykin.mao.songservice.dto;
 
 public record ErrorResponse(
     int status,

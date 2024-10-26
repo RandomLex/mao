@@ -60,14 +60,9 @@
 1. **Import the Postman collection:**
     - Open Postman.
     - Click on `Import` in the top left corner.
-    - Select the `postman_collection.json` file located in the root of the project.
+    - Select the `mao.postman_collection.json` file located in the **postman** of the project.
 
-2. **Configure the environment:**
-    - Set up a new environment in Postman with the following variables:
-        - `song_service_url`: `http://localhost:8082`
-        - `resource_service_url`: `http://localhost:8081`
-
-3. **Run the requests:**
+2. **Run the requests:**
     - Use the imported collection to interact with the Song and Resource services.
     - Ensure the services are running before making requests.
 

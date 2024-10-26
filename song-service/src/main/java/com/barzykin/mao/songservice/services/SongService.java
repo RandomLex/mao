@@ -1,5 +1,6 @@
 package com.barzykin.mao.songservice.services;
 
+import com.barzykin.mao.songservice.errors.SongNotFoundException;
 import com.barzykin.mao.songservice.model.Song;
 import com.barzykin.mao.songservice.repositories.SongRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,8 @@ public class SongService {
     private final SongRepository songRepository;
 
     public Mono<Song> getSong(long id) {
-        return songRepository.findById(id);
+        return songRepository.findById(id)
+            .switchIfEmpty(Mono.error(new SongNotFoundException("Song with id " + id + " not found")));
     }
 
     public Mono<Long> createSong(Song song) {

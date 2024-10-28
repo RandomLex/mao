@@ -74,7 +74,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8081/resources?ids=1,2",
+							"raw": "http://localhost:8081/resources?id=1,2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -85,7 +85,7 @@
 							],
 							"query": [
 								{
-									"key": "ids",
+									"key": "id",
 									"value": "1,2"
 								}
 							]
@@ -152,7 +152,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8082/songs?ids=1,2",
+							"raw": "http://localhost:8082/songs?id=1,2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -163,7 +163,7 @@
 							],
 							"query": [
 								{
-									"key": "ids",
+									"key": "id",
 									"value": "1,2"
 								}
 							]

@@ -36,7 +36,7 @@ class ResourceEndpointDeleteTest {
         Mockito.when(resourceService.deleteResources(List.of(1L, 2L))).thenReturn(Flux.just(1L, 2L));
 
         webTestClient.delete()
-            .uri("/resources?ids=1,2")
+            .uri("/resources?id=1,2")
             .exchange()
             .expectStatus().isOk()
             .expectBodyList(Long.class)
@@ -52,7 +52,7 @@ class ResourceEndpointDeleteTest {
         Mockito.when(resourceService.deleteResources(List.of(1L, 2L))).thenReturn(Flux.empty());
 
         webTestClient.delete()
-            .uri("/resources?ids=1,2")
+            .uri("/resources?id=1,2")
             .exchange()
             .expectStatus().isOk()
             .expectBodyList(Long.class)
@@ -66,7 +66,7 @@ class ResourceEndpointDeleteTest {
         Mockito.when(resourceService.deleteResources(List.of(1L, 2L))).thenReturn(Flux.error(new RuntimeException("Internal server error")));
 
         webTestClient.delete()
-            .uri("/resources?ids=1,2")
+            .uri("/resources?id=1,2")
             .exchange()
             .expectStatus().isEqualTo(500)
             .expectBody(ErrorResponse.class)

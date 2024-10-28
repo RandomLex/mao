@@ -45,7 +45,7 @@ public class SongEndpoint {
     }
 
     @DeleteMapping("/songs")
-    public Flux<Long> deleteSongs(@RequestParam(required = false) String ids) {
+    public Flux<Long> deleteSongs(@RequestParam(value = "id", required = false) String ids) {
         // Error handling via GlobalExceptionHandler by default
         return songService.deleteSongs(strToLongs(ids));
     }

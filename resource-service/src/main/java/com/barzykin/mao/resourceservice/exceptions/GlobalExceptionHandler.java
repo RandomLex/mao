@@ -11,13 +11,12 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private static final String BAD_REQUEST_MESSAGE = "Bad request";
     private static final String INTERNAL_SERVER_ERROR_MESSAGE = "An internal server error occurred";
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleResourceNotFound(ResourceNotFoundException e) {
         log.debug(e.getClass().getName());
-        log.debug(BAD_REQUEST_MESSAGE, e);
+        log.debug(HttpStatus.NOT_FOUND.getReasonPhrase(), e);
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
@@ -30,7 +29,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidFileException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleInvalidFileException(InvalidFileException e) {
         log.debug(e.getClass().getName());
-        log.debug(BAD_REQUEST_MESSAGE, e);
+        log.debug( HttpStatus.BAD_REQUEST.getReasonPhrase(), e);
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),

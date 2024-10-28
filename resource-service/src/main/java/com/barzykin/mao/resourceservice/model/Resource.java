@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 
 public record Resource(
     @Id
-    Long id,
+    Integer id,
     byte[] data
 ) {
     public Resource(byte[] data) {

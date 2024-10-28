@@ -10,8 +10,8 @@ import java.util.Collection;
 
 
 @Repository
-public interface SongRepository extends R2dbcRepository<Song, Long> {
+public interface SongRepository extends R2dbcRepository<Song, Integer> {
 
     @Query("DELETE FROM song WHERE id IN (:ids) RETURNING id")
-    Flux<Long> deleteSongsByIdIn(Collection<Long> ids);
+    Flux<Integer> deleteSongsByIdIn(Collection<Integer> ids);
 }

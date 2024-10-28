@@ -19,7 +19,7 @@ import java.io.InputStream;
 @Service
 public class Mp3Service {
 
-    public SongDto toSongDto(Metadata metadata, long resourceId) {
+    public SongDto toSongDto(Metadata metadata, int resourceId) {
         return new SongDto(
             metadata.get("dc:title"),
             metadata.get("xmpDM:artist"),

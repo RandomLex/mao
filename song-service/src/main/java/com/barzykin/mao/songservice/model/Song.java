@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id;
 
 public record Song(
     @Id
-    Long id,
+    Integer id,
     String name,
     String artist,
     String album,

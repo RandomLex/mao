@@ -1,6 +1,7 @@
 package com.barzykin.mao.resourceservice.endpoints;
 
 import com.barzykin.mao.resourceservice.dto.ErrorResponse;
+import com.barzykin.mao.resourceservice.dto.ResourceDeleteResponse;
 import com.barzykin.mao.resourceservice.services.FilePartService;
 import com.barzykin.mao.resourceservice.services.ResourceService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,37 +34,37 @@ class ResourceEndpointDeleteTest {
 
     @Test
     void deleteResources_all_present_success() {
-        Mockito.when(resourceService.deleteResources(List.of(1L, 2L))).thenReturn(Flux.just(1L, 2L));
+        Mockito.when(resourceService.deleteResources(List.of(1, 2))).thenReturn(Flux.just(1, 2));
 
         webTestClient.delete()
             .uri("/resources?id=1,2")
             .exchange()
             .expectStatus().isOk()
-            .expectBodyList(Long.class)
+            .expectBody(ResourceDeleteResponse.class)
             .value(response -> {
-                assert response.size() == 2;
-                assert response.contains(1L);
-                assert response.contains(2L);
+                assert response.ids().length == 2;
+                assert response.ids()[0] == 1;
+                assert response.ids()[1] == 2;
             });
     }
 
     @Test
     void deleteResources_all_absent_success() {
-        Mockito.when(resourceService.deleteResources(List.of(1L, 2L))).thenReturn(Flux.empty());
+        Mockito.when(resourceService.deleteResources(List.of(1, 2))).thenReturn(Flux.empty());
 
         webTestClient.delete()
             .uri("/resources?id=1,2")
             .exchange()
             .expectStatus().isOk()
-            .expectBodyList(Long.class)
+            .expectBody(ResourceDeleteResponse.class)
             .value(response -> {
-                assert response.isEmpty();
+                assert response.ids().length == 0;
             });
     }
 
     @Test
     void deleteResources_internalServerError() {
-        Mockito.when(resourceService.deleteResources(List.of(1L, 2L))).thenReturn(Flux.error(new RuntimeException("Internal server error")));
+        Mockito.when(resourceService.deleteResources(List.of(1, 2))).thenReturn(Flux.error(new RuntimeException("Internal server error")));
 
         webTestClient.delete()
             .uri("/resources?id=1,2")
@@ -76,4 +77,19 @@ class ResourceEndpointDeleteTest {
                 "An internal server error occurred"
             ));
     }
+
+    @Test
+    void deleteResources_lengthOfIdParameterIsMoreThan199Symbols() {
+        webTestClient.delete()
+            .uri("/resources?id=" + "x".repeat(200))
+            .exchange()
+            .expectStatus().isBadRequest()
+            .expectBody(ErrorResponse.class)
+            .isEqualTo(new ErrorResponse(
+                400,
+                "Bad Request",
+                "400 BAD_REQUEST \"Validation failure\""
+            ));
+    }
+
 }

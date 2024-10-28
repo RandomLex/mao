@@ -33,7 +33,7 @@ public class ResourceService {
             });
     }
 
-    public Mono<Long> saveResourceAndPostToSongService(byte[] mp3Bytes) {
+    public Mono<Integer> saveResourceAndPostToSongService(byte[] mp3Bytes) {
         return mp3Service.extractMetadata(mp3Bytes)
             .flatMap(metadata -> resourceRepository.saveAndGetId(new Resource(mp3Bytes))
                 .flatMap(savedResource -> songService.postToSongService(metadata, savedResource.id())
@@ -42,14 +42,14 @@ public class ResourceService {
             );
     }
 
-    public Mono<byte[]> getResourceById(Long id) {
+    public Mono<byte[]> getResourceById(Integer id) {
         return resourceRepository.findById(id)
             .map(Resource::data)
             .switchIfEmpty(Mono.error(new ResourceNotFoundException("Resource not found")));
     }
 
 
-    public Flux<Long> deleteResources(Iterable<Long> ids) {
+    public Flux<Integer> deleteResources(Iterable<Integer> ids) {
         return resourceRepository.deleteAllByIdIn(ids);
     }
 }

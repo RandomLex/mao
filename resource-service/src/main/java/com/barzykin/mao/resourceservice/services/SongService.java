@@ -12,7 +12,7 @@ public class SongService {
     private final WebClient.Builder webClientBuilder;
     private final Mp3Service mp3Service;
 
-    public Mono<Void> postToSongService(Metadata metadata, long resourceId) {
+    public Mono<Void> postToSongService(Metadata metadata, int resourceId) {
         return webClientBuilder.build()
             .post()
             .uri("http://localhost:8082/songs")

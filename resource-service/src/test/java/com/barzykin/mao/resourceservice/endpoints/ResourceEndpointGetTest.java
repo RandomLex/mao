@@ -35,7 +35,7 @@ class ResourceEndpointGetTest {
     @Test
     void getResourceById_success() {
         byte[] audioData = new byte[]{/* audio data bytes */};
-        Mockito.when(resourceService.getResourceById(1L)).thenReturn(Mono.just(audioData));
+        Mockito.when(resourceService.getResourceById(1)).thenReturn(Mono.just(audioData));
 
         webTestClient.get()
             .uri("/resources/1")
@@ -48,7 +48,7 @@ class ResourceEndpointGetTest {
 
     @Test
     void getResourceById_notFound() {
-        Mockito.when(resourceService.getResourceById(1L)).thenThrow(new ResourceNotFoundException("Resource with id 1 not found"));
+        Mockito.when(resourceService.getResourceById(1)).thenThrow(new ResourceNotFoundException("Resource with id 1 not found"));
 
         webTestClient.get()
             .uri("/resources/1")
@@ -64,7 +64,7 @@ class ResourceEndpointGetTest {
 
     @Test
     void getResourceById_internalServerError() {
-        Mockito.when(resourceService.getResourceById(1L)).thenReturn(Mono.error(new RuntimeException("Internal server error")));
+        Mockito.when(resourceService.getResourceById(1)).thenReturn(Mono.error(new RuntimeException("Internal server error")));
 
         webTestClient.get()
             .uri("/resources/1")

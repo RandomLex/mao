@@ -43,7 +43,7 @@ class SongEndpointPostTest {
             12345L,
             "1975");
 
-        Mockito.when(songService.createSong(Mockito.any(Song.class))).thenReturn(Mono.just(1L));
+        Mockito.when(songService.createSong(Mockito.any(Song.class))).thenReturn(Mono.just(1));
 
         webTestClient.post()
             .uri("/songs")

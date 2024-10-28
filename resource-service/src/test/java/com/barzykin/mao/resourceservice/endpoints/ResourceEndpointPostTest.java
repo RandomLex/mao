@@ -42,7 +42,7 @@ class ResourceEndpointPostTest {
         byte[] validMp3Data = new byte[]{/* mp3 data bytes */};
         Mockito.when(filePartService.extractBytesFromFilePart(Mockito.any())).thenReturn(Mono.just(validMp3Data));
         Mockito.when(resourceService.validateMp3File(validMp3Data)).thenReturn(Mono.just(validMp3Data));
-        Mockito.when(resourceService.saveResourceAndPostToSongService(validMp3Data)).thenReturn(Mono.just(1L));
+        Mockito.when(resourceService.saveResourceAndPostToSongService(validMp3Data)).thenReturn(Mono.just(1));
 
         MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
         bodyBuilder.part("file", validMp3Data)

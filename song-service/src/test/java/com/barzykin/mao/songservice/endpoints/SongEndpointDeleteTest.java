@@ -2,6 +2,7 @@ package com.barzykin.mao.songservice.endpoints;
 
 import com.barzykin.mao.songservice.congurations.MapperConfig;
 import com.barzykin.mao.songservice.dto.ErrorResponse;
+import com.barzykin.mao.songservice.dto.SongDeleteResponse;
 import com.barzykin.mao.songservice.services.SongService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,35 +33,35 @@ class SongEndpointDeleteTest {
 
     @Test
     void deleteSongs_all_present_success() {
-        Mockito.when(songService.deleteSongs(List.of(1L, 2L))).thenReturn(Flux.just(1L, 2L));
+        Mockito.when(songService.deleteSongs(List.of(1, 2))).thenReturn(Flux.just(1, 2));
         webTestClient.delete()
             .uri("/songs?id=1,2")
             .exchange()
             .expectStatus().isOk()
-            .expectBodyList(Long.class)
+            .expectBody(SongDeleteResponse.class)
             .value(response -> {
-                assert response.size() == 2;
-                assert response.contains(1L);
-                assert response.contains(2L);
+                assert response.ids().length == 2;
+                assert response.ids()[0] == 1;
+                assert response.ids()[1] == 2;
             });
     }
 
     @Test
     void deleteSongs_all_absent_success() {
-        Mockito.when(songService.deleteSongs(List.of(1L, 2L))).thenReturn(Flux.empty());
+        Mockito.when(songService.deleteSongs(List.of(1, 2))).thenReturn(Flux.empty());
         webTestClient.delete()
             .uri("/songs?id=1,2")
             .exchange()
             .expectStatus().isOk()
-            .expectBodyList(Long.class)
+            .expectBody(SongDeleteResponse.class)
             .value(response -> {
-                assert response.isEmpty();
+                assert response.ids().length == 0;
             });
     }
 
     @Test
     void deleteSong_internalServerError() {
-        Mockito.when(songService.deleteSongs(List.of(1L, 2L))).thenReturn(Flux.error(new RuntimeException("Internal server error")));
+        Mockito.when(songService.deleteSongs(List.of(1, 2))).thenReturn(Flux.error(new RuntimeException("Internal server error")));
         webTestClient.delete()
             .uri("/songs?id=1,2")
             .exchange()
@@ -70,6 +71,20 @@ class SongEndpointDeleteTest {
                 500,
                 "Internal Server Error",
                 "An internal server error occurred"
+            ));
+    }
+
+    @Test
+    void deleteSongs_lengthOfIdParameterIsMoreThan199Symbols() {
+        webTestClient.delete()
+            .uri("/songs?id=" + "x".repeat(200))
+            .exchange()
+            .expectStatus().isBadRequest()
+            .expectBody(ErrorResponse.class)
+            .isEqualTo(new ErrorResponse(
+                400,
+                "Bad Request",
+                "400 BAD_REQUEST \"Validation failure\""
             ));
     }
 

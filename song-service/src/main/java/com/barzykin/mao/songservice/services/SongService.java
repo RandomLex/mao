@@ -15,17 +15,17 @@ import java.util.Collection;
 public class SongService {
     private final SongRepository songRepository;
 
-    public Mono<Song> getSong(long id) {
+    public Mono<Song> getSong(int id) {
         return songRepository.findById(id)
             .switchIfEmpty(Mono.error(new SongNotFoundException("Song with id " + id + " not found")));
     }
 
-    public Mono<Long> createSong(Song song) {
+    public Mono<Integer> createSong(Song song) {
         return songRepository.save(song)
             .map(Song::id);
     }
 
-    public Flux<Long> deleteSongs(Collection<Long> ids) {
+    public Flux<Integer> deleteSongs(Collection<Integer> ids) {
         return songRepository.deleteSongsByIdIn(ids);
     }
 }

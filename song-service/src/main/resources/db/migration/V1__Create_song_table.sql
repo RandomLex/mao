@@ -4,6 +4,6 @@ CREATE TABLE song (
       artist VARCHAR(255) NOT NULL,
       album VARCHAR(255),
       length VARCHAR(10),
-      resource_id BIGINT,
+      resource_id INT,
       year VARCHAR(4)
 );

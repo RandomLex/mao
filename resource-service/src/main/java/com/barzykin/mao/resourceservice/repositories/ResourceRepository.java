@@ -9,10 +9,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface ResourceRepository extends R2dbcRepository<Resource, Long> {
+public interface ResourceRepository extends R2dbcRepository<Resource, Integer> {
     @Query("INSERT INTO resource (data) VALUES (:#{#resource.data}) RETURNING *")
     Mono<Resource> saveAndGetId(@NotNull Resource resource);
 
     @Query("DELETE FROM resource WHERE id IN (:ids) RETURNING id")
-    Flux<Long> deleteAllByIdIn(Iterable<Long> ids);
+    Flux<Integer> deleteAllByIdIn(Iterable<Integer> ids);
 }

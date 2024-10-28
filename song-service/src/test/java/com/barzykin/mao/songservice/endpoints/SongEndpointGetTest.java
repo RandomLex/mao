@@ -37,7 +37,7 @@ class SongEndpointGetTest {
     @Test
     void getSong_success() {
         Song mockSong = new Song(
-            1L,
+            1,
             "Bohemian Rhapsody",
             "Queen",
             "A Night at the Opera",
@@ -45,7 +45,7 @@ class SongEndpointGetTest {
             12345L,
             "1975");
 
-        Mockito.when(songService.getSong(1L)).thenReturn(Mono.just(mockSong));
+        Mockito.when(songService.getSong(1)).thenReturn(Mono.just(mockSong));
 
         webTestClient.get()
             .uri("/songs/1")
@@ -64,7 +64,7 @@ class SongEndpointGetTest {
 
     @Test
     void getSong_notFound() {
-        Mockito.when(songService.getSong(1L)).thenThrow(new SongNotFoundException("Song with id 1 not found"));
+        Mockito.when(songService.getSong(1)).thenThrow(new SongNotFoundException("Song with id 1 not found"));
         webTestClient.get()
             .uri("/songs/1")
             .accept(MediaType.APPLICATION_JSON)
@@ -80,7 +80,7 @@ class SongEndpointGetTest {
 
     @Test
     void getSong_internalServerError() {
-        Mockito.when(songService.getSong(1L)).thenReturn(Mono.error(new RuntimeException("Internal server error")));
+        Mockito.when(songService.getSong(1)).thenReturn(Mono.error(new RuntimeException("Internal server error")));
         webTestClient.get()
             .uri("/songs/1")
             .accept(MediaType.APPLICATION_JSON)

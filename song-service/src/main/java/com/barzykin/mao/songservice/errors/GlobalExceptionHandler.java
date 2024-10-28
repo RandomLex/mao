@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.stream.Collectors;
 
@@ -29,6 +30,21 @@ public class GlobalExceptionHandler {
                 e.getMessage()
             ),
             HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse> handleSongNotFoundException(HandlerMethodValidationException e) {
+        log.error(e.getClass().getName());
+        log.error("Length of 'id' parameter is more that 200: {}", e.getMessage());
+
+        return new ResponseEntity<>(
+            new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage()
+            ),
+            HttpStatus.BAD_REQUEST
         );
     }
 

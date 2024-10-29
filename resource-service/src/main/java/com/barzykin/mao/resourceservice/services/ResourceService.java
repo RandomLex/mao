@@ -46,7 +46,7 @@ public class ResourceService {
     public Mono<byte[]> getResourceById(Integer id) {
         return resourceRepository.findById(id)
             .map(Resource::data)
-            .switchIfEmpty(Mono.error(new ResourceNotFoundException("Resource not found")));
+            .switchIfEmpty(Mono.error(new ResourceNotFoundException("Resource with id " + id + " not found")));
     }
 
 

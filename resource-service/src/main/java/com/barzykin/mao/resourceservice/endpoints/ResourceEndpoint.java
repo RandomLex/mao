@@ -2,20 +2,18 @@ package com.barzykin.mao.resourceservice.endpoints;
 
 import com.barzykin.mao.resourceservice.dto.ResourceDeleteResponse;
 import com.barzykin.mao.resourceservice.dto.SongCreateResponse;
-import com.barzykin.mao.resourceservice.services.FilePartService;
 import com.barzykin.mao.resourceservice.services.ResourceService;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -25,15 +23,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class ResourceEndpoint {
-    private final FilePartService filePartService;
     private final ResourceService resourceService;
 
-    @PostMapping(value = "/resources", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Mono<ResponseEntity<?>> uploadMp3(@RequestPart("file") Mono<FilePart> filePart) {
-        return filePart
-            .flatMap(filePartService::extractBytesFromFilePart)
-            .flatMap(resourceService::validateMp3File)
-            .flatMap(resourceService::saveResourceAndPostToSongService)
+    @PostMapping(value = "/resources", consumes = "audio/mpeg")
+    public Mono<ResponseEntity<?>> uploadMp3(@RequestBody Mono<byte[]> audioData) {
+        return audioData
+            .flatMap(resourceService::validateMp3Data)
+            .flatMap(resourceService::saveResource)
+            .flatMap(resourceService::extractMetadataAndPostToSongService)
             .map(savedResourceId -> ResponseEntity.ok(new SongCreateResponse(savedResourceId)));
     }
 

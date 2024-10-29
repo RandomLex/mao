@@ -2,7 +2,6 @@ package com.barzykin.mao.resourceservice.endpoints;
 
 import com.barzykin.mao.resourceservice.dto.ErrorResponse;
 import com.barzykin.mao.resourceservice.dto.ResourceDeleteResponse;
-import com.barzykin.mao.resourceservice.services.FilePartService;
 import com.barzykin.mao.resourceservice.services.ResourceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,12 +23,9 @@ class ResourceEndpointDeleteTest {
     @MockBean
     private ResourceService resourceService;
 
-    @MockBean
-    private FilePartService filePartService;
-
     @BeforeEach
     void setUp() {
-        Mockito.reset(resourceService, filePartService);
+        Mockito.reset(resourceService);
     }
 
     @Test

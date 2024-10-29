@@ -16,3 +16,5 @@ spring:
     user: resource_user
     password: resource_password
     url: jdbc:postgresql://localhost:54321/postgres
+  codec:
+    max-in-memory-size: 50MB

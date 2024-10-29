@@ -17,7 +17,7 @@ public class ResourceService {
     private final Mp3Service mp3Service;
     private final SongService songService;
 
-    public Mono<byte[]> validateMp3File(byte[] bytes) {
+    public Mono<byte[]> validateMp3Data(byte[] bytes) {
         return mp3Service.isMp3(bytes)
             .flatMap(isMp3 -> {
                 if (!isMp3) {
@@ -33,13 +33,14 @@ public class ResourceService {
             });
     }
 
-    public Mono<Integer> saveResourceAndPostToSongService(byte[] mp3Bytes) {
-        return mp3Service.extractMetadata(mp3Bytes)
-            .flatMap(metadata -> resourceRepository.saveAndGetId(new Resource(mp3Bytes))
-                .flatMap(savedResource -> songService.postToSongService(metadata, savedResource.id())
-                    .thenReturn(savedResource.id())
-                )
-            );
+    public Mono<Resource> saveResource(byte[] mp3Bytes) {
+        return resourceRepository.saveAndGetId(new Resource(mp3Bytes));
+    }
+
+    public Mono<Integer> extractMetadataAndPostToSongService(Resource resource) {
+        return mp3Service.extractMetadata(resource.data())
+            .flatMap(metadata -> songService.postToSongService(metadata, resource.id())
+                .thenReturn(resource.id()));
     }
 
     public Mono<byte[]> getResourceById(Integer id) {

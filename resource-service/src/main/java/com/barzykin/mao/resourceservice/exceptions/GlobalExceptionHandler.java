@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -17,7 +18,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleResourceNotFound(ResourceNotFoundException e) {
         log.debug(e.getClass().getName());
-        log.debug(HttpStatus.NOT_FOUND.getReasonPhrase(), e);
+        log.debug(HttpStatus.NOT_FOUND.getReasonPhrase(), e); // debug level as soon as NotFoundException is a common case
         return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(
             new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
@@ -26,6 +27,23 @@ public class GlobalExceptionHandler {
             )
         ));
     }
+
+    @ExceptionHandler(UnsupportedMediaTypeStatusException.class)
+    public ResponseEntity<ErrorResponse> handleSongNotFoundException(UnsupportedMediaTypeStatusException e) {
+        log.error(e.getClass().getName());
+        String reason = e.getBody().getDetail();
+        log.error("Unsupported MediaType: {}", reason);
+
+        return new ResponseEntity<>(
+            new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                reason
+            ),
+            HttpStatus.BAD_REQUEST
+        );
+    }
+
 
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<ErrorResponse> handleSongNotFoundException(HandlerMethodValidationException e) {

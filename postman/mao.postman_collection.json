@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "024b3cea-6ecb-468f-b5d5-7284cd8adeb3",
+		"_postman_id": "c6116133-0f09-4a0f-a64b-d9da10c3f7ca",
 		"name": "mao",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "1315799"
@@ -36,23 +36,12 @@
 					},
 					"request": {
 						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "audio/mpeg",
-								"type": "text",
-								"disabled": true
-							}
-						],
+						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "/Users/Alexej_Barzykin/Library/CloudStorage/OneDrive-EPAM/Learn/Microservices#1/queen.mp3"
-								}
-							]
+							"mode": "file",
+							"file": {
+								"src": "/Users/Alexej_Barzykin/Library/CloudStorage/OneDrive-EPAM/Learn/Microservices#1/queen.mp3"
+							}
 						},
 						"url": {
 							"raw": "http://localhost:8081/resources",

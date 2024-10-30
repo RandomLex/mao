@@ -1,0 +1,60 @@
+services:
+
+  resource-service:
+    build:
+      context: ./resource-service
+      dockerfile: Dockerfile
+    container_name: resource-service
+    ports:
+      - "8081:8081"
+    env_file:
+      - resource-service.env
+    networks:
+      - resource-network
+    depends_on:
+      - postgres-resource
+      - song-service
+
+  postgres-resource:
+    image: postgres:17
+    container_name: postgres-resource
+    env_file:
+      - postgres-resource-17.env
+    #    volumes:
+    #      - ~/mp3-resource:/var/lib/postgresql/data
+    ports:
+      - "54321:5432"
+    networks:
+      - resource-network
+
+  song-service:
+    build:
+      context: ./song-service
+      dockerfile: Dockerfile
+    container_name: song-service
+    ports:
+      - "8082:8082"
+    env_file:
+      - song-service.env
+    networks:
+      - song-network
+    depends_on:
+      - postgres-song
+
+  postgres-song:
+    image: postgres:17
+    container_name: postgres-song
+    env_file:
+      - postgres-song-17.env
+    #    volumes:
+    #      - ~/mp3-song:/var/lib/postgresql/data
+    ports:
+      - "54322:5432"
+    networks:
+      - song-network
+
+networks:
+  resource-network:
+    driver: bridge
+  song-network:
+    driver: bridge

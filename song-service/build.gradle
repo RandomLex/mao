@@ -10,15 +10,16 @@ tasks.register('composeDown', Exec) {
     commandLine 'docker', 'compose', 'down'
 }
 
+tasks.register('copyJar', Copy) {
+    dependsOn tasks.bootJar
+    from "$projectDir/build/libs/song-service-${version}.jar"
+    into "$projectDir/build/docker"
+    rename { "app.jar" }
+}
+
 tasks.build {
-    dependsOn composeUp
+    dependsOn copyJar
 }
-
-tasks.bootRun {
-    dependsOn composeUp
-    finalizedBy composeDown
-}
-
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webflux'

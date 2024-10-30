@@ -10,12 +10,15 @@ tasks.register('composeDown', Exec) {
     commandLine 'docker', 'compose', 'down'
 }
 
-tasks.build {
-    dependsOn composeUp
+tasks.register('copyJar', Copy) {
+    dependsOn tasks.bootJar
+    from "$projectDir/build/libs/resource-service-${version}.jar"
+    into "$projectDir/build/docker"
+    rename { "app.jar" }
 }
 
-tasks.bootRun {
-    dependsOn composeUp
+tasks.build {
+    dependsOn copyJar
 }
 
 dependencies {

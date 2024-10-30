@@ -20,8 +20,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SongNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleSongNotFoundException(SongNotFoundException e) {
-        log.error(e.getClass().getName());
-        log.error("Song not found: {}", e.getMessage());
+        log.debug(e.getClass().getName());
+        log.debug("Song not found: {}", e.getMessage());
 
         return new ResponseEntity<>(
             new ErrorResponse(

@@ -34,3 +34,9 @@
 8. Postman collection was provided in the version 1
 9. Done
 ---
+## Module 2 version 1
+- run the ./gradlew clean build
+- run the docker-compose up
+- import the ./postman/mao.postman_collection.json
+- check the services with the postman collection
+---

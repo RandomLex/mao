@@ -2,8 +2,9 @@ services:
 
   resource-service:
     build:
-      context: ./resource-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: resource-service/Dockerfile
+    image: mao-resource-service:latest
     container_name: resource-service
     ports:
       - "8081:8081"
@@ -11,15 +12,18 @@ services:
       - resource-service.env
     networks:
       - resource-network
+      - inter-service-network
     depends_on:
       - postgres-resource
       - song-service
 
   postgres-resource:
-    image: postgres:17
+    image: postgres:17-alpine
     container_name: postgres-resource
     env_file:
       - postgres-resource-17.env
+    volumes:
+      - ./resource-service/src/main/resources/db/migration/:/docker-entrypoint-initdb.d
     #    volumes:
     #      - ~/mp3-resource:/var/lib/postgresql/data
     ports:
@@ -29,8 +33,9 @@ services:
 
   song-service:
     build:
-      context: ./song-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: song-service/Dockerfile
+    image: mao-song-service:latest
     container_name: song-service
     ports:
       - "8082:8082"
@@ -38,14 +43,17 @@ services:
       - song-service.env
     networks:
       - song-network
+      - inter-service-network
     depends_on:
       - postgres-song
 
   postgres-song:
-    image: postgres:17
+    image: postgres:17-alpine
     container_name: postgres-song
     env_file:
       - postgres-song-17.env
+    volumes:
+      - ./song-service/src/main/resources/db/migration/:/docker-entrypoint-initdb.d
     #    volumes:
     #      - ~/mp3-song:/var/lib/postgresql/data
     ports:
@@ -57,4 +65,6 @@ networks:
   resource-network:
     driver: bridge
   song-network:
+    driver: bridge
+  inter-service-network:
     driver: bridge

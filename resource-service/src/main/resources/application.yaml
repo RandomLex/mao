@@ -7,17 +7,17 @@ spring:
     livereload:
       port: 45729
   r2dbc:
-    url: r2dbc:postgresql://host.docker.internal:54321/postgres
+    url: r2dbc:postgresql://localhost:54321/resourcedb
     username: resource_user
     password: resource_password
   flyway:
-    enabled: true
+    enabled: false
     locations: classpath:db/migration
     user: resource_user
     password: resource_password
-    url: jdbc:postgresql://host.docker.internal:54321/postgres
+    url: jdbc:postgresql://localhost:54321/resourcedb
   codec:
     max-in-memory-size: 50MB
 
 song-service:
-  url: http://host.docker.internal:8082
+  url: http://song-service:8082

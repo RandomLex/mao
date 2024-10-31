@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-docker build -t song-service:latest .
+CURRENT_DIR=$(pwd)
+cd ..
+docker build -f song-service/Dockerfile -t song-service:latest .
+cd "$CURRENT_DIR" || exit

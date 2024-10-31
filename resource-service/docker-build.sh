@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-docker build -t resource-service:latest .
+CURRENT_DIR=$(pwd)
+cd ..
+docker build -f resource-service/Dockerfile -t resource-service:latest .
+cd "$CURRENT_DIR" || exit

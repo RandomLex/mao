@@ -16,19 +16,9 @@
     ```
 
 2. **Build services:**
-   ```sh
-     ./gradlew clean build
+    ```sh
+    docker-compose up -d --build
    ```
-
-3. **Run services:**
-   - with the console output
-      ```sh
-      docker-compose up
-      ```
-   - to be run in the background
-      ```sh
-      docker-compose up -d
-      ```
 
 ## Using Postman Collection
 

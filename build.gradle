@@ -20,6 +20,7 @@ java {
 
 ext {
     tikaVersion = '2.9.2'
+    springCloudVersion = '2023.0.3'
 }
 
 subprojects {
@@ -36,6 +37,7 @@ subprojects {
     dependencyManagement {
         imports {
             mavenBom 'org.springframework.boot:spring-boot-dependencies:3.3.4'
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         }
         dependencies {
             dependency "org.apache.tika:tika-core:${tikaVersion}"

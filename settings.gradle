@@ -1,3 +1,5 @@
 rootProject.name = 'mao'
 include(':resource-service')
 include(':song-service')
+include(':service-discovery')
+include(':api-gateway')

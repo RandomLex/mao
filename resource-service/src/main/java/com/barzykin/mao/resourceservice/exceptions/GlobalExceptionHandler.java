@@ -4,11 +4,15 @@ import com.barzykin.mao.resourceservice.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -44,20 +48,57 @@ public class GlobalExceptionHandler {
         );
     }
 
-
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ErrorResponse> handleSongNotFoundException(HandlerMethodValidationException e) {
+    @ExceptionHandler(ServerWebInputException.class)
+    public ResponseEntity<ErrorResponse> handleServerWebInputException(ServerWebInputException e) {
         log.error(e.getClass().getName());
-        log.error("Length of 'id' parameter is more that 200: {}", e.getMessage());
+        log.error("Type mismatch or input validation error: {}", e.getReason());
 
         return new ResponseEntity<>(
             new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                e.getMessage()
+                "Invalid input: " + e.getReason() + " It must be a positive integer."
             ),
             HttpStatus.BAD_REQUEST
         );
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleValidationException(HandlerMethodValidationException e) {
+        log.error("Validation exception: {}", e.getClass().getName());
+        log.error("Validation error details: {}", e.getMessage());
+
+        String detailedErrors = e.getAllErrors().stream()
+            .map(objectError -> {
+                if (objectError instanceof FieldError fieldError) {
+                    return String.format("Field '%s': %s", fieldError.getField(), fieldError.getDefaultMessage());
+                } else {
+                    return objectError.getDefaultMessage();
+                }
+            })
+            .collect(Collectors.joining("; "));
+
+        log.error("Detailed validation messages: {}", detailedErrors);
+
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                detailedErrors
+            )
+        ));
+    }
+
+    @ExceptionHandler(InvalidIdSequenceException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleIllegalArgumentException(InvalidIdSequenceException e) {
+        log.error("Validation error: {}", e.getMessage());
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage()
+            )
+        ));
     }
 
     @ExceptionHandler(InvalidFileException.class)

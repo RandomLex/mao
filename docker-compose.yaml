@@ -6,8 +6,8 @@ services:
       dockerfile: resource-service/Dockerfile
     image: mao-resource-service:latest
     container_name: resource-service
-    ports:
-      - "8081:8081"
+#    ports:
+#      - "8081:8081"
     env_file:
       - resource-service.env
     networks:
@@ -16,6 +16,7 @@ services:
     depends_on:
       - postgres-resource
       - song-service
+      - service-discovery
 
   postgres-resource:
     image: postgres:17-alpine
@@ -26,8 +27,8 @@ services:
       - ./resource-service/src/main/resources/db/migration/:/docker-entrypoint-initdb.d
     #    volumes:
     #      - ~/mp3-resource:/var/lib/postgresql/data
-    ports:
-      - "54321:5432"
+#    ports:
+#      - "54321:5432"
     networks:
       - resource-network
 
@@ -36,9 +37,8 @@ services:
       context: .
       dockerfile: song-service/Dockerfile
     image: mao-song-service:latest
-    container_name: song-service
-    ports:
-      - "8082:8082"
+    deploy:
+      replicas: 2
     env_file:
       - song-service.env
     networks:
@@ -46,6 +46,7 @@ services:
       - inter-service-network
     depends_on:
       - postgres-song
+      - service-discovery
 
   postgres-song:
     image: postgres:17-alpine
@@ -56,10 +57,38 @@ services:
       - ./song-service/src/main/resources/db/migration/:/docker-entrypoint-initdb.d
     #    volumes:
     #      - ~/mp3-song:/var/lib/postgresql/data
-    ports:
-      - "54322:5432"
+#    ports:
+#      - "54322:5432"
     networks:
       - song-network
+
+  service-discovery:
+    build:
+      context: .
+      dockerfile: service-discovery/Dockerfile
+    image: mao-service-discovery:latest
+    container_name: service-discovery
+    ports:
+      - "8083:8083"
+    env_file:
+      - service-discovery.env
+    networks:
+      - inter-service-network
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    image: mao-api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    env_file:
+      - api-gateway.env
+    networks:
+      - inter-service-network
+    depends_on:
+      - service-discovery
 
 networks:
   resource-network:

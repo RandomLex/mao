@@ -5,10 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import reactor.core.publisher.Mono;
 
 import java.util.stream.Collectors;
 
@@ -34,18 +36,29 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ErrorResponse> handleSongNotFoundException(HandlerMethodValidationException e) {
-        log.error(e.getClass().getName());
-        log.error("Length of 'id' parameter is more that 200: {}", e.getMessage());
+    public Mono<ResponseEntity<ErrorResponse>> handleValidationException(HandlerMethodValidationException e) {
+        log.error("Validation exception: {}", e.getClass().getName());
+        log.error("Validation error details: {}", e.getMessage());
 
-        return new ResponseEntity<>(
+        String detailedErrors = e.getAllErrors().stream()
+            .map(objectError -> {
+                if (objectError instanceof FieldError fieldError) {
+                    return String.format("Field '%s': %s", fieldError.getField(), fieldError.getDefaultMessage());
+                } else {
+                    return objectError.getDefaultMessage();
+                }
+            })
+            .collect(Collectors.joining("; "));
+
+        log.error("Detailed validation messages: {}", detailedErrors);
+
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                e.getMessage()
-            ),
-            HttpStatus.BAD_REQUEST
-        );
+                detailedErrors
+            )
+        ));
     }
 
     @ExceptionHandler(WebExchangeBindException.class)
@@ -65,6 +78,20 @@ public class GlobalExceptionHandler {
             ),
             HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidIdSequenceException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleIllegalArgumentException(InvalidIdSequenceException e) {
+        log.error("Validation error: {}", e.getMessage());
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                e.getMessage()
+            )
+        ));
+    }
+
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception e) {

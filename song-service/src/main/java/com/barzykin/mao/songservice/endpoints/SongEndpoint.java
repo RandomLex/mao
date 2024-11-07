@@ -3,10 +3,12 @@ package com.barzykin.mao.songservice.endpoints;
 import com.barzykin.mao.songservice.dto.SongDeleteResponse;
 import com.barzykin.mao.songservice.dto.SongDto;
 import com.barzykin.mao.songservice.dto.SongCreateResponse;
+import com.barzykin.mao.songservice.errors.InvalidIdSequenceException;
 import com.barzykin.mao.songservice.model.Song;
 import com.barzykin.mao.songservice.services.SongService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +36,7 @@ public class SongEndpoint {
     private final ModelMapper modelMapper;
 
     @GetMapping("/songs/{id}")
-    public Mono<ResponseEntity<SongDto>> getSong(@PathVariable int id) {
+    public Mono<ResponseEntity<SongDto>> getSong(@Positive @PathVariable int id) {
         return songService.getSong(id)
             .map(song -> ResponseEntity.ok(modelMapper.map(song, SongDto.class)));
     }
@@ -52,17 +55,28 @@ public class SongEndpoint {
         @RequestParam(value = "id", required = false)
         @Size(max = 200-1, message = "Parameter 'id' length must be less than 200 characters.") String ids) {
         // Error handling via GlobalExceptionHandler by default
-        return songService.deleteSongs(strToIntegers(ids))
+        return songService.deleteSongs(validateAndParseIds(ids))
             .collectList()
             .map(deletedIds -> ResponseEntity.ok(new SongDeleteResponse(deletedIds.stream().mapToInt(i -> i).toArray())));
     }
 
-    private static List<Integer> strToIntegers(String ids) {
-        if (ids == null) {
+    private static List<Integer> validateAndParseIds(String ids) {
+        if (ids == null || ids.isEmpty()) {
             return List.of();
         }
-        return Arrays.stream(ids.split(","))
-            .map(Integer::parseInt)
-            .toList();
+
+        try {
+            return Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .map(Integer::parseInt)
+                .peek(id -> {
+                    if (id <= 0) {
+                        throw new InvalidIdSequenceException();
+                    }
+                })
+                .collect(Collectors.toList());
+        } catch (NumberFormatException e) {
+            throw new InvalidIdSequenceException();
+        }
     }
 }

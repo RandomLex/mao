@@ -7,7 +7,7 @@ spring:
     livereload:
       port: 45730
   r2dbc:
-    url: r2dbc:postgresql://postgres-song:54322/songdb
+    url: r2dbc:postgresql://localhost:54322/songdb
     username: song_user
     password: song_password
   flyway:
@@ -15,4 +15,9 @@ spring:
     locations: classpath:db/migration
     user: song_user
     password: song_password
-    url: jdbc:postgresql://postgres-song:54322/songdb
+    url: jdbc:postgresql://localhost:54322/songdb
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8083/eureka

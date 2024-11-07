@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8083/eureka
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: song-service
+          uri: lb://song-service
+          predicates:
+            - Path=/songs/**
+#          filters:
+#            - name: RewritePath
+#              args:
+#                regexp: /song/(?<path>.*)
+#                replacement: /${path}
+        - id: resource-service
+          uri: lb://resource-service
+          predicates:
+            - Path=/resources/**
+#          filters:
+#            - name: RewritePath
+#              args:
+#                regexp: /resource/(?<path>.*)
+#                replacement: /${path}

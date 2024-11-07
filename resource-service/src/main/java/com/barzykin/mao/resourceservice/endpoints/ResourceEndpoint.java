@@ -2,7 +2,9 @@ package com.barzykin.mao.resourceservice.endpoints;
 
 import com.barzykin.mao.resourceservice.dto.ResourceDeleteResponse;
 import com.barzykin.mao.resourceservice.dto.SongCreateResponse;
+import com.barzykin.mao.resourceservice.exceptions.InvalidIdSequenceException;
 import com.barzykin.mao.resourceservice.services.ResourceService;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +38,7 @@ public class ResourceEndpoint {
     }
 
     @GetMapping(value = "/resources/{id}")
-    public Mono<ResponseEntity<byte[]>> getResourceById(@PathVariable Integer id) {
+    public Mono<ResponseEntity<byte[]>> getResourceById(@Positive @PathVariable Integer id) {
         return resourceService.getResourceById(id)
             .map(bytes -> ResponseEntity.ok()
                 .header("Content-Disposition", "attachment; filename=\"song.mp3\"")
@@ -49,17 +52,29 @@ public class ResourceEndpoint {
         @RequestParam(value = "id", required = false)
         @Size(max = 200-1, message = "Parameter 'id' length must be less than 200 characters.") String ids) {
         // Error handling via GlobalExceptionHandler by default
-        return resourceService.deleteResources(strToIntegers(ids))
+        return resourceService.deleteResources(validateAndParseIds(ids))
             .collectList()
             .map(deletedIds -> ResponseEntity.ok(new ResourceDeleteResponse(deletedIds.stream().mapToInt(i -> i).toArray())));
     }
 
-    private static List<Integer> strToIntegers(String ids) {
-        if (ids == null) {
+    private static List<Integer> validateAndParseIds(String ids) {
+        if (ids == null || ids.isEmpty()) {
             return List.of();
         }
-        return Arrays.stream(ids.split(","))
-            .map(Integer::parseInt)
-            .toList();
+
+        try {
+            return Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .map(Integer::parseInt)
+                .peek(id -> {
+                    if (id <= 0) {
+                        throw new InvalidIdSequenceException();
+                    }
+                })
+                .collect(Collectors.toList());
+        } catch (NumberFormatException e) {
+            throw new InvalidIdSequenceException();
+        }
     }
+
 }
